@@ -1,0 +1,101 @@
+name: Deploy ShopEasy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # CI: if any check fails, the job stops and nothing is deployed.
+      - name: Validate application files
+        run: |
+          test -f index.html
+          test -f styles.css
+          test -f app.js
+          node --check app.js
+          echo "All checks passed."
+
+      # Server prep: safe to run every time. Installs Nginx only if it is missing.
+      - name: Prepare server (install and configure Nginx)
+        uses: appleboy/ssh-action@v1
+        env:
+          EC2_PASSWORD: ${{ secrets.EC2_PASSWORD }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          password: ${{ secrets.EC2_PASSWORD }}
+          envs: EC2_PASSWORD
+          script: |
+            set -e
+            # run a command with sudo, feeding it the SSH password
+            s() { echo "$EC2_PASSWORD" | sudo -S -p '' "$@"; }
+
+            # 1. Install Nginx if it is not already installed
+            if ! command -v nginx >/dev/null 2>&1; then
+              if command -v apt-get >/dev/null 2>&1; then
+                s apt-get update -y
+                s env DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
+              else
+                s dnf install -y nginx
+              fi
+            fi
+
+            # 2. Create the web folder and let the deploy user write to it
+            s mkdir -p /var/www/shopeasy
+            s chown -R "$(id -un)":"$(id -gn)" /var/www/shopeasy
+
+            # 3. Point Nginx at the web folder
+            cat > /tmp/shopeasy.conf <<'EOF'
+            server {
+                listen 80 default_server;
+                listen [::]:80 default_server;
+
+                root /var/www/shopeasy;
+                index index.html;
+                server_name _;
+
+                location / {
+                    try_files $uri $uri/ =404;
+                }
+            }
+            EOF
+            if [ -d /etc/nginx/sites-available ]; then
+              s mv /tmp/shopeasy.conf /etc/nginx/sites-available/shopeasy
+              s ln -sf /etc/nginx/sites-available/shopeasy /etc/nginx/sites-enabled/shopeasy
+              s rm -f /etc/nginx/sites-enabled/default
+            else
+              s mv /tmp/shopeasy.conf /etc/nginx/conf.d/shopeasy.conf
+            fi
+
+            # 4. Make sure Nginx is running and the config is valid
+            s nginx -t
+            s systemctl enable --now nginx
+
+      # CD: copy the three website files from the runner to the server.
+      - name: Copy application to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          password: ${{ secrets.EC2_PASSWORD }}
+          source: "index.html,styles.css,app.js"
+          target: /var/www/shopeasy
+
+      - name: Reload Nginx
+        uses: appleboy/ssh-action@v1
+        env:
+          EC2_PASSWORD: ${{ secrets.EC2_PASSWORD }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          password: ${{ secrets.EC2_PASSWORD }}
+          envs: EC2_PASSWORD
+          script: |
+            echo "$EC2_PASSWORD" | sudo -S -p '' systemctl reload nginx

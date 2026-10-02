@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShopEasy — Simple shopping. Smarter delivery.</title>
+  <meta name="description" content="ShopEasy is a lightweight demo store used to teach Git, CI/CD and AWS deployment." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="logo">Shop<span>Easy</span></a>
+      <nav class="nav" aria-label="Main">
+        <a href="#featured">Featured</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="status-pill" title="This site is served from AWS EC2">
+        <span class="status-dot"></span> Live on AWS
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1>Simple shopping. <span class="accent">Smarter delivery.</span></h1>
+          <p class="lead">
+            A lightweight e-commerce experience built to demonstrate how application changes
+            move from Git through CI/CD and into a live AWS environment.
+          </p>
+          <div class="btn-row">
+            <a href="#featured" class="btn btn-primary">Shop Featured Item</a>
+            <a href="#how-it-works" class="btn btn-secondary">See the DevOps Flow</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="product-card">
+            <div class="product-stage">
+              <div class="headphones">
+                <div class="hp-band"></div>
+                <div class="hp-cup hp-left"></div>
+                <div class="hp-cup hp-right"></div>
+              </div>
+            </div>
+            <div class="product-meta">
+              <div>
+                <p class="product-name">NovaSound Pro</p>
+                <p class="product-price">₦25,000</p>
+              </div>
+              <p class="rating">★ 4.9</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROMOTION BANNER ============
+         LIVE DEMO: change the code and percentage below
+         (and VALID_CODE / DISCOUNT_RATE in app.js). -->
+    <section class="promo-section">
+      <div class="container">
+        <div class="promo">
+          <div>
+            <p class="eyebrow">TODAY'S DEMO OFFER</p>
+            <h2 class="promo-title">Use code <span id="promo-code">DEVOPS10</span> for <span id="promo-percent">10%</span> off</h2>
+            <p class="promo-text">Apply the code during checkout to activate your training discount.</p>
+          </div>
+          <button id="copy-btn" class="btn btn-primary" type="button">Copy Code</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURED PRODUCT + CHECKOUT ============ -->
+    <section id="featured" class="section">
+      <div class="container featured-grid">
+        <div class="featured-info">
+          <p class="eyebrow dark">FEATURED</p>
+          <h2>NovaSound Pro Headphones</h2>
+          <p class="price-big">₦25,000</p>
+          <p class="muted">
+            Premium wireless headphones with active noise cancellation and all-day battery life.
+          </p>
+          <ul class="features">
+            <li><span class="check">✓</span> 40-hour battery</li>
+            <li><span class="check">✓</span> Active noise cancellation</li>
+            <li><span class="check">✓</span> Fast pairing</li>
+          </ul>
+        </div>
+
+        <div class="checkout-card">
+          <h3>Order Summary</h3>
+          <div class="row">
+            <span>NovaSound Pro</span>
+            <span id="item-price">₦25,000</span>
+          </div>
+          <div class="row discount-row" id="discount-row" hidden>
+            <span>Discount</span>
+            <span id="discount-amount">-₦0</span>
+          </div>
+          <div class="row total-row">
+            <span>Total</span>
+            <span id="total-amount">₦25,000</span>
+          </div>
+
+          <!-- <label for="code-input" class="field-label">Discount Code</label>
+          <div class="code-row">
+            <input id="code-input" type="text" placeholder="Enter code" autocomplete="off" />
+            <button id="apply-btn" class="btn btn-dark" type="button">Apply</button>
+          </div>
+          <p id="message" class="message" role="status" aria-live="polite"></p> -->
+
+          <button id="checkout-btn" class="btn btn-primary btn-block" type="button">
+            Complete Demo Checkout
+          </button>
+          <p class="fine-print">Demo only — no payment is processed.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DEVOPS STORY ============ -->
+    <section id="how-it-works" class="section section-gray">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow dark">HOW IT WORKS</p>
+          <h2>One small code change. One complete delivery journey.</h2>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <p class="step-num">01</p>
+            <h3>CHANGE</h3>
+            <p>Update the application locally.</p>
+          </article>
+          <span class="arrow" aria-hidden="true">→</span>
+          <article class="step">
+            <p class="step-num">02</p>
+            <h3>COMMIT</h3>
+            <p>Record the change in Git.</p>
+          </article>
+          <span class="arrow" aria-hidden="true">→</span>
+          <article class="step">
+            <p class="step-num">03</p>
+            <h3>VALIDATE</h3>
+            <p>CI checks the application.</p>
+          </article>
+          <span class="arrow" aria-hidden="true">→</span>
+          <article class="step">
+            <p class="step-num">04</p>
+            <h3>DEPLOY</h3>
+            <p>CD updates the application on AWS.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section id="about" class="section">
+      <div class="container about">
+        <h2>Built for the DevOps Lab</h2>
+        <p class="lead">
+          ShopEasy is intentionally simple. During the demonstration, application content or
+          behaviour will be changed locally, committed to Git, pushed to GitHub, validated by CI,
+          and automatically deployed to AWS.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© ShopEasy — a DevOps training demo</span>
+      <span class="muted-light">No real orders. No real payments.</span>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
